@@ -15,7 +15,7 @@ from tensorflow.keras.layers import LSTM, Dense, Dropout
 import tensorflow as tf
 
 def get_stock_data(ticker):
-    df = yf.download(ticker, start='2015-01-01', end='2024-12-31')[['Close']]
+    df = yf.download(ticker, start='2015-01-01', end='2025-12-31')[['Close']]
     df.dropna(inplace=True)
     return df
 
@@ -142,3 +142,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
