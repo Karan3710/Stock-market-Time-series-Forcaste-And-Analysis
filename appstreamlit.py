@@ -70,14 +70,47 @@ def run_sarima(data):
     rmse = np.sqrt(mean_squared_error(data['Close'][-30:], forecast))
     return forecast, rmse
 
+import pandas as pd
+from prophet import Prophet
+from sklearn.metrics import mean_squared_error
+import numpy as np
+
 def run_prophet(data):
-    df_prophet = data.reset_index()[['Date', 'Close']]
+
+    # Handle MultiIndex columns
+    if isinstance(data.columns, pd.MultiIndex):
+        data.columns = data.columns.get_level_values(0)
+
+    # Reset index
+    df_prophet = data.reset_index()
+
+    # Rename columns properly
+    if 'Date' not in df_prophet.columns:
+        df_prophet.rename(columns={df_prophet.columns[0]: 'Date'}, inplace=True)
+
+    if 'Close' not in df_prophet.columns:
+        raise ValueError(f"Close column not found. Available columns: {df_prophet.columns}")
+
+    # Prophet requires ds and y
+    df_prophet = df_prophet[['Date', 'Close']]
     df_prophet.columns = ['ds', 'y']
+
+    # Train model
     model = Prophet()
     model.fit(df_prophet)
+
+    # Future dates
     future = model.make_future_dataframe(periods=30)
+
+    # Forecast
     forecast = model.predict(future)
-    rmse = np.sqrt(mean_squared_error(data['Close'][-30:], forecast['yhat'][-30:]))
+
+    # RMSE calculation
+    y_true = df_prophet['y']
+    y_pred = forecast['yhat'][:len(y_true)]
+
+    rmse = np.sqrt(mean_squared_error(y_true, y_pred))
+
     return forecast, rmse
 
 def run_lstm(data):
