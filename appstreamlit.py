@@ -13,6 +13,44 @@ from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout
 import tensorflow as tf
+import sqlite3
+import random
+
+st.set_page_config(page_title="AI Trends SaaS", layout="wide")
+
+# =============================
+# LOGIN SYSTEM
+# =============================
+# =============================
+# SIMPLE LOGIN SYSTEM
+# =============================
+st.sidebar.title("🔐 Login")
+
+username = st.sidebar.text_input("Username")
+password = st.sidebar.text_input("Password", type="password")
+
+if username != "karan" or password != "1234":
+    st.warning("Enter correct username and password")
+    st.stop()
+
+st.sidebar.success("Logged in successfully")
+# =============================
+# DATABASE
+# =============================
+conn = sqlite3.connect("user.db")
+c = conn.cursor()
+
+c.execute("""
+CREATE TABLE IF NOT EXISTS preferences (
+    user TEXT,
+    keyword TEXT
+)
+""")
+
+def save_pref(user, keyword):
+    c.execute("INSERT INTO preferences VALUES (?,?)", (user, keyword))
+    conn.commit()
+
 
 def get_stock_data(ticker):
     df = yf.download(ticker, start='2015-01-01', end='2025-12-31')[['Close']]
