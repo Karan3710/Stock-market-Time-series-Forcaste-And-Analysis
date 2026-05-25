@@ -16,7 +16,6 @@ import tensorflow as tf
 import sqlite3
 import random
 
-st.set_page_config(page_title="AI Trends SaaS", layout="wide")
 
 # =============================
 # LOGIN SYSTEM
